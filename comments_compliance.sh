@@ -105,11 +105,21 @@ function print_results(){
     fi
 }
 
+function set_percentage_value(){
+    PERCENTAGE=${OPTARG}
+    if ! [[ $PERCENTAGE =~ [0-9]+ ]]  || [ $PERCENTAGE -ge 100 ]
+    then
+        echo "Invaid value to '-p': Value must be between 0 and 100."
+        echo "Supplied value is: $PERCENTAGE"
+        echo
+        exit 1
+    fi
+}
 # Get parameters if provided
 while getopts p:x:ish parameters
 do
     case "${parameters}" in
-        p) PERCENTAGE=${OPTARG};;
+        p) set_percentage_value;;
         x) FILE_EXTENSION=${OPTARG};;
         i) INVERT_OPERATION='True';;
         s) SORT_OUTPUT='True';;
@@ -139,7 +149,7 @@ fi
 progress_banner "Cleaning up enviroment..."
 rm $COMPLIANT_FILES_LIST > /dev/null 2>&1
 rm $INCOMPLIANT_FILES_LIST > /dev/null 2>&1
-mkdir compliance_output
+mkdir compliance_output > /dev/null 2>&1
 echo "Done."
 # Get files list
 progress_banner "Searching for matching files..."
