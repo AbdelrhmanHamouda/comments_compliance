@@ -92,6 +92,19 @@ function progress_banner(){
 }
 
 
+# Function to print results
+function print_results(){
+    local file_to_print=$1
+    local criteria=$2
+    if [ -f "$file_to_print" ]
+    then
+        cat $file_to_print
+    else
+        echo "All files did not meet your $criteria criteria." 
+        echo
+    fi
+}
+
 # Get parameters if provided
 while getopts p:x:ish parameters
 do
@@ -148,12 +161,11 @@ fi
 
 
 # Print compliance results based on -i parameter
-
 if [ $INVERT_OPERATION == 'True' ]
 then 
     progress_banner "Compliant files"
-    cat $COMPLIANT_FILES_LIST
+    print_results $COMPLIANT_FILES_LIST "compliance"
 else
     progress_banner "Incompliant files"
-    cat $INCOMPLIANT_FILES_LIST
+    print_results $INCOMPLIANT_FILES_LIST "incompliance"
 fi
