@@ -169,3 +169,7 @@ else
     progress_banner "Incompliant files"
     print_results $INCOMPLIANT_FILES_LIST "incompliance"
 fi
+
+echo
+echo "All data are stored in $PWD/compliance_output/"
+echo
