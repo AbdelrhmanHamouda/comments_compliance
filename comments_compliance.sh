@@ -4,7 +4,6 @@ PERCENTAGE='30'
 INVERT_OPERATION='False'
 SORT_OUTPUT='False'
 FILE_EXTENSION='.c'
-PATH_TO_FILES='.'
 
 # Define the help function
 function Help(){
@@ -39,7 +38,11 @@ done
 shift $((OPTIND-1))
 [ "${1:-}" = "--" ] && shift
 PATH_TO_FILES=$1
-
+# Set default for PATH_TO_FILES if not set
+if [ $PATH_TO_FILES == '.' ] || [ -z "$PATH_TO_FILES" ]
+then 
+    PATH_TO_FILES=$PWD
+fi
 
 # Objective #2
 # add the main logic to detect the files with ext -x that have less that -p lines of comments
@@ -51,15 +54,25 @@ PATH_TO_FILES=$1
 function get_matching_files(){
     local file_extension=$1
     local path_to_files=$2
-    echo "find $path_to_files -type f -name \"*$file_extension\""
+    echo "Searching for files with extension: $file_extension in: $path_to_files..."
     files_found=`find $path_to_files -type f -name "*$file_extension"`
 }
 
-# Function to calculate percentage of comments compliance 
+# Function to calculate percentage of comments compliance for one file based on operation mode
+function comments_compliance(){
+    local percentage=$1 
+    local operation_mode=$2
+    local file_under_assessment=$3
+    echo "Assessing file: $file_under_assessment..."
+
+}
 
 # Main logic
 
 # Get files list
 get_matching_files $FILE_EXTENSION $PATH_TO_FILES
 
-echo $files_found
+for file in $files_found
+do
+    echo $file
+done
