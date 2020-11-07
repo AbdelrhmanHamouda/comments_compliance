@@ -82,16 +82,22 @@ function comments_compliance(){
     # populate results files
     if [ $compliance_percentage -ge $desired_percentage ]
     then
-        echo -e "File name: $file_under_assessment \nCompliance percentage: $compliance_percentage" >> $COMPLIANT_FILES_LIST
+        echo -e "File name: $file_under_assessment \tCompliance percentage: $compliance_percentage" >> $COMPLIANT_FILES_LIST
     else
-        echo -e "File name: $file_under_assessment \nCompliance percentage: $compliance_percentage" >> $INCOMPLIANT_FILES_LIST
+        echo -e "File name: $file_under_assessment \tCompliance percentage: $compliance_percentage" >> $INCOMPLIANT_FILES_LIST
     fi
     
     echo "File assessment completed. "
 }
 
-# Main logic
+#####################
+##### Main logic ####
+#####################
 
+# Clean previously generated files
+echo "Cleaning up enviroment..."
+rm $COMPLIANT_FILES_LIST > /dev/null 2>&1
+rm $INCOMPLIANT_FILES_LIST > /dev/null 2>&1
 # Get files list
 get_matching_files $FILE_EXTENSION $PATH_TO_FILES
 
@@ -100,3 +106,12 @@ for file in $files_found
 do
     comments_compliance $PERCENTAGE $file
 done
+
+# Sort output if needed
+if [ $SORT_OUTPUT == 'True' ]
+then
+    echo "Sorting output..."
+    sort -o $COMPLIANT_FILES_LIST $COMPLIANT_FILES_LIST > /dev/null 2>&1
+    sort -o $INCOMPLIANT_FILES_LIST $INCOMPLIANT_FILES_LIST > /dev/null 2>&1
+    echo "Sorting successful."
+fi
