@@ -4,7 +4,7 @@ PERCENTAGE='30'
 INVERT_OPERATION='False'
 SORT_OUTPUT='False'
 FILE_EXTENSION='.c'
-PATH='.'
+PATH_TO_FILES='.'
 
 # Define the help function
 function Help(){
@@ -38,7 +38,7 @@ done
 # Shift parameters to get $PATH
 shift $((OPTIND-1))
 [ "${1:-}" = "--" ] && shift
-PATH=$1
+PATH_TO_FILES=$1
 
 
 # Objective #2
@@ -46,3 +46,20 @@ PATH=$1
 # define all possible ways to comment a line or lines 
 # implement logic based on variables 
 # working by default for 30% and .c 
+
+# Function to get all files that match $FILE_EXTENSION
+function get_matching_files(){
+    local file_extension=$1
+    local path_to_files=$2
+    echo "find $path_to_files -type f -name \"*$file_extension\""
+    files_found=`find $path_to_files -type f -name "*$file_extension"`
+}
+
+# Function to calculate percentage of comments compliance 
+
+# Main logic
+
+# Get files list
+get_matching_files $FILE_EXTENSION $PATH_TO_FILES
+
+echo $files_found
