@@ -1,10 +1,4 @@
 #!/bin/bash
-
-
-# objective: Build a base for the script that takes -p, -x, -i, -s and -h parameters and echo what they have been passed
-# result: parameters working
-# result: help working 
-
 # Set default values for parameters
 PERCENTAGE='30'
 INVERT_OPERATION='False'
@@ -14,7 +8,6 @@ PATH='.'
 
 # Define the help function
 function Help(){
-   # Display Help
    echo "The script searches for all C-files that contain less than a specific percentage of commented lines. "
    echo
    echo "Syntax: comments_compliance.sh [-p|x|i|s|h] [path]"
