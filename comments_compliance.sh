@@ -31,8 +31,15 @@ function Help(){
 function get_matching_files(){
     local file_extension=$1
     local path_to_files=$2
-    echo "Searching for files with extension: $file_extension in: $path_to_files..."
+    echo "Searching for files with extension: $file_extension in: $path_to_files"
     files_found=`find $path_to_files -type f -name "*$file_extension"`
+    # if no files found exit the script
+    if [ -z "$files_found" ]
+    then
+        echo "No '$file_extension' files found in $path_to_files"
+        echo
+        exit 2
+    fi
 }
 
 # Function to calculate percentage of comments compliance for one file based on operation mode
@@ -62,9 +69,9 @@ function comments_compliance(){
     # populate results files
     if [ $compliance_percentage -ge $desired_percentage ]
     then
-        echo -e "File name: $file_under_assessment \tCompliance percentage: $compliance_percentage" >> $COMPLIANT_FILES_LIST
+        echo -e "File name: $file_under_assessment \tCompliance percentage: $compliance_percentage%" >> $COMPLIANT_FILES_LIST
     else
-        echo -e "File name: $file_under_assessment \tCompliance percentage: $compliance_percentage" >> $INCOMPLIANT_FILES_LIST
+        echo -e "File name: $file_under_assessment \tCompliance percentage: $compliance_percentage%" >> $INCOMPLIANT_FILES_LIST
     fi
     
     echo "File assessment completed. "
@@ -80,7 +87,6 @@ function sort_output(){
 # Function to make output more readable
 function progress_banner(){
   echo "+------------------------------------------+"
-  echo "|                                          |"
   printf "|`tput bold` %-40s `tput sgr0`|\n" "$@"
   echo "+------------------------------------------+"
 }
