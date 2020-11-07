@@ -41,3 +41,8 @@ shift $((OPTIND-1))
 PATH=$1
 
 
+# Objective #2
+# add the main logic to detect the files with ext -x that have less that -p lines of comments
+# define all possible ways to comment a line or lines 
+# implement logic based on variables 
+# working by default for 30% and .c 
