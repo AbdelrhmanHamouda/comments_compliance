@@ -4,8 +4,8 @@ PERCENTAGE='30'
 INVERT_OPERATION='False'
 SORT_OUTPUT='False'
 FILE_EXTENSION='.c'
-COMPLIANT_FILES_LIST='compliant_files.list'
-INCOMPLIANT_FILES_LIST='Incompliant_files.list'
+COMPLIANT_FILES_LIST='compliance_output/compliant_files.list'
+INCOMPLIANT_FILES_LIST='compliance_output/Incompliant_files.list'
 
 # Define the help function
 function Help(){
@@ -126,6 +126,7 @@ fi
 progress_banner "Cleaning up enviroment..."
 rm $COMPLIANT_FILES_LIST > /dev/null 2>&1
 rm $INCOMPLIANT_FILES_LIST > /dev/null 2>&1
+mkdir compliance_output
 echo "Done."
 # Get files list
 progress_banner "Searching for matching files..."
