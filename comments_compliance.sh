@@ -49,7 +49,7 @@ function comments_compliance(){
     local total_lines_count=0
     local comments_count=0
 
-    echo "Assessing file: $file_under_assessment..."
+    echo "Assessing file: $file_under_assessment"
 
     # count lines in file
     total_lines_count=`cat $file_under_assessment | wc -l`
