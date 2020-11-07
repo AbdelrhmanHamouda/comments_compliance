@@ -4,6 +4,8 @@ PERCENTAGE='30'
 INVERT_OPERATION='False'
 SORT_OUTPUT='False'
 FILE_EXTENSION='.c'
+COMPLIANT_FILES_LIST='compliant_files.list'
+INCOMPLIANT_FILES_LIST='Incompliant_files.list'
 
 # Define the help function
 function Help(){
@@ -44,11 +46,6 @@ then
     PATH_TO_FILES=$PWD
 fi
 
-# Objective #2
-# add the main logic to detect the files with ext -x that have less that -p lines of comments
-# define all possible ways to comment a line or lines 
-# implement logic based on variables 
-# working by default for 30% and .c 
 
 # Function to get all files that match $FILE_EXTENSION
 function get_matching_files(){
@@ -60,11 +57,11 @@ function get_matching_files(){
 
 # Function to calculate percentage of comments compliance for one file based on operation mode
 function comments_compliance(){
-    local percentage=$1 
+    local desired_percentage=$1 
     local file_under_assessment=$2
     local total_lines_count=0
     local comments_count=0
-    comments_compliance_results_file='tmp_files_compliance_percentage.list'
+
     echo "Assessing file: $file_under_assessment..."
 
     # count lines in file
@@ -82,10 +79,15 @@ function comments_compliance(){
 
     # calculate percentage
     local compliance_percentage=$((($comments_count*100)/$total_lines_count))
-    # populate results file
-    echo "$file_under_assessment $compliance_percentage" >> $comments_compliance_results_file
-    echo "file assessment completed. "
-
+    # populate results files
+    if [ $compliance_percentage -ge $desired_percentage ]
+    then
+        echo -e "File name: $file_under_assessment \nCompliance percentage: $compliance_percentage" >> $COMPLIANT_FILES_LIST
+    else
+        echo -e "File name: $file_under_assessment \nCompliance percentage: $compliance_percentage" >> $INCOMPLIANT_FILES_LIST
+    fi
+    
+    echo "File assessment completed. "
 }
 
 # Main logic
@@ -98,5 +100,3 @@ for file in $files_found
 do
     comments_compliance $PERCENTAGE $file
 done
-
-# 
