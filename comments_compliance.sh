@@ -21,6 +21,10 @@ function Help(){
     echo "h     Print this help."
     echo "path  Set the path to be used (default is '\$PWD')."
     echo
+    echo "Usage example:"
+    echo "./comments_compliance.sh -is -p 40 /project/directory"
+    echo "      This command will print all compliant '.c' files in the provided directory and sort the output alphanumerically."
+    echo
 }
 
 # Function to get all files that match $FILE_EXTENSION
@@ -116,6 +120,7 @@ fi
 progress_banner "Cleaning up enviroment..."
 rm $COMPLIANT_FILES_LIST > /dev/null 2>&1
 rm $INCOMPLIANT_FILES_LIST > /dev/null 2>&1
+echo "Done."
 # Get files list
 progress_banner "Searching for matching files..."
 get_matching_files $FILE_EXTENSION $PATH_TO_FILES
