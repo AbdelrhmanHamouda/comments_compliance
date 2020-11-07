@@ -39,7 +39,7 @@ shift $((OPTIND-1))
 [ "${1:-}" = "--" ] && shift
 PATH_TO_FILES=$1
 # Set default for PATH_TO_FILES if not set
-if [ $PATH_TO_FILES == '.' ] || [ -z "$PATH_TO_FILES" ]
+if [ -z "$PATH_TO_FILES" ] || [ $PATH_TO_FILES == '.' ]
 then 
     PATH_TO_FILES=$PWD
 fi
@@ -61,9 +61,30 @@ function get_matching_files(){
 # Function to calculate percentage of comments compliance for one file based on operation mode
 function comments_compliance(){
     local percentage=$1 
-    local operation_mode=$2
-    local file_under_assessment=$3
+    local file_under_assessment=$2
+    local total_lines_count=0
+    local comments_count=0
+    comments_compliance_results_file='tmp_files_compliance_percentage.list'
     echo "Assessing file: $file_under_assessment..."
+
+    # count lines in file
+    total_lines_count=`cat $file_under_assessment | wc -l`
+    
+    # count single line comments
+    local single_line_comments=`cat $file_under_assessment | grep "^\s*//" | wc -l `
+    # count inline single line comments
+    local inline_single_line_comments=`cat $file_under_assessment | grep ".*;\s*//" | wc -l `
+    # count multi line comments
+    local multi_line_comments_count=`cat $file_under_assessment | awk '/\/\*/,/\*\// {print}' | wc -l`
+
+    # add total comment lines in file
+    comments_count=$(($single_line_comments + $inline_single_line_comments + $multi_line_comments_count))
+
+    # calculate percentage
+    local compliance_percentage=$((($comments_count*100)/$total_lines_count))
+    # populate results file
+    echo "$file_under_assessment $compliance_percentage" >> $comments_compliance_results_file
+    echo "file assessment completed. "
 
 }
 
@@ -72,7 +93,10 @@ function comments_compliance(){
 # Get files list
 get_matching_files $FILE_EXTENSION $PATH_TO_FILES
 
+# Assess files 
 for file in $files_found
 do
-    echo $file
+    comments_compliance $PERCENTAGE $file
 done
+
+# 
