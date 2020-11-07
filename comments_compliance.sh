@@ -9,43 +9,19 @@ INCOMPLIANT_FILES_LIST='Incompliant_files.list'
 
 # Define the help function
 function Help(){
-   echo "The script searches for all C-files that contain less than a specific percentage of commented lines. "
-   echo
-   echo "Syntax: comments_compliance.sh [-p|x|i|s|h] [path]"
-   echo "parameters:"
-   echo "p     Set the percentage for comment-lines. The provided value should be from 0 to 100 (default is '30')."
-   echo "x     Set the file extension to be checked (default is '.c')."
-   echo "i     Inverts the operation. Meaning that the output will be for the files that match or exceed the defined percentage."
-   echo "s     Sort the output alphanumerically."
-   echo "h     Print this help."
-   echo "path  Set the path to be used (default is '\$PWD')."
-   echo
+    progress_banner "Script usage and parameter description"
+    echo "The script searches for all C-files that contain less than a specific percentage of commented lines. "
+    echo
+    echo "Syntax: comments_compliance.sh [-p|x|i|s|h] [path]"
+    echo "parameters:"
+    echo "p     Set the percentage for comment-lines. The provided value should be from 0 to 100 (default is '30')."
+    echo "x     Set the file extension to be checked (default is '.c')."
+    echo "i     Inverts the operation. Meaning that the output will be for the files that match or exceed the defined percentage."
+    echo "s     Sort the output alphanumerically."
+    echo "h     Print this help."
+    echo "path  Set the path to be used (default is '\$PWD')."
+    echo
 }
-
-# Get parameters if provided
-while getopts p:x:ish parameters
-do
-    case "${parameters}" in
-        p) PERCENTAGE=${OPTARG};;
-        x) FILE_EXTENSION=${OPTARG};;
-        i) INVERT_OPERATION='True';;
-        s) SORT_OUTPUT='True';;
-        h)
-            Help
-            exit;;
-    esac
-done
-
-# Shift parameters to get $PATH
-shift $((OPTIND-1))
-[ "${1:-}" = "--" ] && shift
-PATH_TO_FILES=$1
-# Set default for PATH_TO_FILES if not set
-if [ -z "$PATH_TO_FILES" ] || [ $PATH_TO_FILES == '.' ]
-then 
-    PATH_TO_FILES=$PWD
-fi
-
 
 # Function to get all files that match $FILE_EXTENSION
 function get_matching_files(){
@@ -90,18 +66,62 @@ function comments_compliance(){
     echo "File assessment completed. "
 }
 
+# Function to sort the output files
+function sort_output(){
+    sort -o $COMPLIANT_FILES_LIST $COMPLIANT_FILES_LIST > /dev/null 2>&1
+    sort -o $INCOMPLIANT_FILES_LIST $INCOMPLIANT_FILES_LIST > /dev/null 2>&1
+    echo "Sorting successful."
+}
+
+# Function to make output more readable
+function progress_banner(){
+  echo "+------------------------------------------+"
+  echo "|                                          |"
+  printf "|`tput bold` %-40s `tput sgr0`|\n" "$@"
+  echo "+------------------------------------------+"
+}
+
+
+# Get parameters if provided
+while getopts p:x:ish parameters
+do
+    case "${parameters}" in
+        p) PERCENTAGE=${OPTARG};;
+        x) FILE_EXTENSION=${OPTARG};;
+        i) INVERT_OPERATION='True';;
+        s) SORT_OUTPUT='True';;
+        h)
+            Help
+            exit;;
+    esac
+done
+
+# Shift parameters to get $PATH
+shift $((OPTIND-1))
+[ "${1:-}" = "--" ] && shift
+PATH_TO_FILES=$1
+# Set default for PATH_TO_FILES if not set
+if [ -z "$PATH_TO_FILES" ] || [ $PATH_TO_FILES == '.' ]
+then 
+    PATH_TO_FILES=$PWD
+fi
+
+
+
 #####################
 ##### Main logic ####
 #####################
 
 # Clean previously generated files
-echo "Cleaning up enviroment..."
+progress_banner "Cleaning up enviroment..."
 rm $COMPLIANT_FILES_LIST > /dev/null 2>&1
 rm $INCOMPLIANT_FILES_LIST > /dev/null 2>&1
 # Get files list
+progress_banner "Searching for matching files..."
 get_matching_files $FILE_EXTENSION $PATH_TO_FILES
 
 # Assess files 
+progress_banner "Assessing files..."
 for file in $files_found
 do
     comments_compliance $PERCENTAGE $file
@@ -110,8 +130,18 @@ done
 # Sort output if needed
 if [ $SORT_OUTPUT == 'True' ]
 then
-    echo "Sorting output..."
-    sort -o $COMPLIANT_FILES_LIST $COMPLIANT_FILES_LIST > /dev/null 2>&1
-    sort -o $INCOMPLIANT_FILES_LIST $INCOMPLIANT_FILES_LIST > /dev/null 2>&1
-    echo "Sorting successful."
+    progress_banner "Sorting output..."
+    sort_output
+fi
+
+
+# Print compliance results based on -i parameter
+
+if [ $INVERT_OPERATION == 'True' ]
+then 
+    progress_banner "Compliant files"
+    cat $COMPLIANT_FILES_LIST
+else
+    progress_banner "Incompliant files"
+    cat $INCOMPLIANT_FILES_LIST
 fi
