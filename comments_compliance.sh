@@ -107,7 +107,7 @@ function print_results(){
 
 function set_percentage_value(){
     PERCENTAGE=${OPTARG}
-    if ! [[ $PERCENTAGE =~ [0-9]+ ]]  || [ $PERCENTAGE -ge 100 ]
+    if ! [[ $PERCENTAGE =~ [0-9]+ ]]  || [ $PERCENTAGE -gt 100 ]
     then
         echo "Invaid value to '-p': Value must be between 0 and 100."
         echo "Supplied value is: $PERCENTAGE"
